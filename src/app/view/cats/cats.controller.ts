@@ -12,11 +12,13 @@ import {
   Redirect,
   Req,
   UseGuards,
+  UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { Roles } from 'src/app/decorator/roles.decorator';
 import { RolesGuard } from 'src/app/guard/roles/roles.guard';
+import { LoggingInterceptor } from 'src/app/interceptor/logging/logging.interceptor';
 import { Cat } from 'src/app/interface/cat.interface';
 import { CreateCatSchema } from 'src/app/joi-schema/cat-schema';
 import { ParseIntPipe } from 'src/app/pipe/parse-init/parse-int.pipe';
@@ -26,6 +28,7 @@ import { CatsService } from './cats.service';
 
 @Controller('cats')
 @UseGuards(RolesGuard) // 绑定守卫
+// @UseInterceptors(LoggingInterceptor)
 export class CatsController {
   constructor(private catsService: CatsService) {}
 
