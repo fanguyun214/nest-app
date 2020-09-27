@@ -12,6 +12,7 @@ import { CatsModule } from './app/view/cats/cats.module';
   providers: [AppService],
 })
 export class AppModule implements NestModule {
+  // 中间件
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('cats');
   }

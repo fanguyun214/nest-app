@@ -11,13 +11,21 @@ import {
   Query,
   Redirect,
   Req,
+  UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { Roles } from 'src/app/decorator/roles.decorator';
+import { RolesGuard } from 'src/app/guard/roles/roles.guard';
 import { Cat } from 'src/app/interface/cat.interface';
+import { CreateCatSchema } from 'src/app/joi-schema/cat-schema';
+import { ParseIntPipe } from 'src/app/pipe/parse-init/parse-int.pipe';
+import { ValidationPipe } from 'src/app/pipe/validate/validate.pipe';
 import { CreateCatDto } from '../../dto/cat.dto';
 import { CatsService } from './cats.service';
 
 @Controller('cats')
+@UseGuards(RolesGuard) // 绑定守卫
 export class CatsController {
   constructor(private catsService: CatsService) {}
 
@@ -47,6 +55,7 @@ export class CatsController {
 
   // post /cats/add
   @Post('add')
+  @UsePipes(new ValidationPipe(CreateCatSchema))
   create(@Body() createCatDto: CreateCatDto): any {
     console.log('createCatDto', createCatDto);
     this.catsService.add(createCatDto);
@@ -69,12 +78,13 @@ export class CatsController {
 
   // 路由参数
   @Get(':id')
-  findOne(@Param() params): any {
-    console.log(params.id);
+  @Roles('admin')
+  findOne(@Param('id', new ParseIntPipe()) id): any {
+    console.log(id);
     return {
       code: 1,
       msg: 'success',
-      data: `${params.id}#new cats`,
+      data: `${id}#new cats`,
     };
   }
 }
